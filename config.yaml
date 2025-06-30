@@ -1,0 +1,26 @@
+zap:
+  filename: "./log/app.log"     # 日志文件路径
+  max_size: 10                  # 单个日志文件的最大大小 (MB)
+  max_backups: 30               # 最多保留的旧日志文件个数
+  max_age: 180                  # 最多保留旧日志文件的天数
+  compress: "True"              # 是否压缩旧日志文件
+mysql:
+  path: "172.16.5.233"
+  port: 3306
+  username: "root"
+  password: "1234qwer"
+  database: "mydatabase"
+  charset: "utf8mb4"
+  parse_time: "True"
+  loc: "Local"
+ms_presidio:
+  path: "http://172.16.5.233:5002/analyze"
+  language: "en"
+my_classify_model:
+  path: "http://172.16.5.233:8000/classify"
+  max_length: 512
+default_db_filter:
+  mysql: ["mysql","information_schema", "performance_schema", "sys", "innodb", "tmp", "ndbinfo"]
+  oracle: ["SYS", "SYSTEM", "SYSMAN", "DBSNMP", "OUTLN", "XDB", "ORDDATA", "ORDPLUGINS", "ORDSYS", "CTXSYS", "WMSYS", "MDSYS", "OLAPSYS", "APEX_XXXXXX", "HR", "SCOTT","ANONYMOUS"]
+  kingbase: ["template0", "template1", "security", "kingbase"]
+  dameng: []
