@@ -5,11 +5,12 @@ import (
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
+	"path/filepath"
 )
 
 type zapConfig struct {
 	// path of the log file
-	Filename string `mapstructure:"filename"`
+	LogDir string `mapstructure:"log_dir"`
 	// max size (MB) of the single log file
 	MaxSize int `mapstructure:"max_size"`
 	// max number of saved log files
@@ -43,7 +44,7 @@ type ZapLogConfig struct {
 	Compress bool `mapstructure:"compress"`
 }
 
-func InitLogger(config *ZapLogConfig) error {
+func InitLogger() error {
 	// 设置日志输出格式
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "time",
@@ -63,25 +64,25 @@ func InitLogger(config *ZapLogConfig) error {
 
 	// 根据不同等级创建不同的日志文件
 	infoWriter := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "logs/info.log",
-		MaxSize:    config.MaxSize,
-		MaxBackups: config.MaxBackups,
-		MaxAge:     config.MaxAge,
-		Compress:   config.Compress,
+		Filename:   filepath.Join(zapConf.LogDir, "info.log"),
+		MaxSize:    zapConf.MaxSize,
+		MaxBackups: zapConf.MaxBackups,
+		MaxAge:     zapConf.MaxAge,
+		Compress:   zapConf.Compress,
 	})
 	errorWriter := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "logs/error.log",
-		MaxSize:    config.MaxSize,
-		MaxBackups: config.MaxBackups,
-		MaxAge:     config.MaxAge,
-		Compress:   config.Compress,
+		Filename:   filepath.Join(zapConf.LogDir, "error.log"),
+		MaxSize:    zapConf.MaxSize,
+		MaxBackups: zapConf.MaxBackups,
+		MaxAge:     zapConf.MaxAge,
+		Compress:   zapConf.Compress,
 	})
 	debugWriter := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "logs/debug.log",
-		MaxSize:    config.MaxSize,
-		MaxBackups: config.MaxBackups,
-		MaxAge:     config.MaxAge,
-		Compress:   config.Compress,
+		Filename:   filepath.Join(zapConf.LogDir, "debug.log"),
+		MaxSize:    zapConf.MaxSize,
+		MaxBackups: zapConf.MaxBackups,
+		MaxAge:     zapConf.MaxAge,
+		Compress:   zapConf.Compress,
 	})
 
 	// 设置日志级别过滤器
