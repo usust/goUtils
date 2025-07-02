@@ -44,7 +44,7 @@ type ZapLogConfig struct {
 	Compress bool `mapstructure:"compress"`
 }
 
-func InitLogger() error {
+func initZapCore() error {
 	// 设置日志输出格式
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "time",
