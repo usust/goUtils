@@ -10,11 +10,9 @@ import (
 func init() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
+	// 当前路径为项目执行路径，默认为当前项目路径
+	viper.AddConfigPath("./pkg/goUtils")
 	viper.AddConfigPath(".")
-	viper.AddConfigPath("..")
-	viper.AddConfigPath("../..")
-	viper.AddConfigPath("../../.")
-	viper.AddConfigPath("./config")
 
 	// 初始化日志配置和创建日志对象
 	if err := initLogger(); err != nil {
