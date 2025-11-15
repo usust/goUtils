@@ -1,11 +1,12 @@
 package utils
 
 import (
+	"os"
+	"path/filepath"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"os"
-	"path/filepath"
 )
 
 type zapConfig struct {
@@ -44,7 +45,8 @@ type ZapLogConfig struct {
 	Compress bool `mapstructure:"compress"`
 }
 
-func initZapCore() error {
+// InitZapCore 初始化zap日志
+func InitZapCore() error {
 	// 设置日志输出格式
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "time",
