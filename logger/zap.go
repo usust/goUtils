@@ -9,19 +9,6 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-//type zapConfig struct {
-//	// path of the log file
-//	LogDir string `mapstructure:"log_dir"`
-//	// max size (MB) of the single log file
-//	MaxSize int `mapstructure:"max_size"`
-//	// max number of saved log files
-//	MaxBackups int `mapstructure:"max_backups"`
-//	// max day number of the saved log file 最多保留旧日志文件的天数
-//	MaxAge int `mapstructure:"max_age"`
-//	// whether compress the log file
-//	IsCompress bool `mapstructure:"compress"`
-//}
-
 // 对外暴露的日志对象
 var (
 	Logger        *zap.Logger
