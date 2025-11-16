@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"go_utils/logger"
 	"io"
 	"net/http"
 	"time"
@@ -28,20 +29,20 @@ var sharedHTTPClient = &http.Client{
 func GetPublicIPByIPIPNet() (string, error) {
 	resp, err := sharedHTTPClient.Get("https://myip.ipip.net/json")
 	if err != nil {
-		SugaredLogger.Errorw("访问ipip.net时发生错误", "url", "err", err)
+		logger.SugaredLogger.Errorw("访问ipip.net时发生错误", "url", "err", err)
 		return "", fmt.Errorf("访问myip.ipip.net时发生错误: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		SugaredLogger.Errorw("读取 ipip.net 返回的内容时发生错误", "err", err)
+		logger.SugaredLogger.Errorw("读取 ipip.net 返回的内容时发生错误", "err", err)
 		return "", fmt.Errorf("读取myip.ipip.net返回的内容时发生错误: %w", err)
 	}
 
 	var ipResp ipipNetResponse
 	if err := json.Unmarshal(body, &ipResp); err != nil {
-		SugaredLogger.Errorw("反序列化 ipip.net 返回的内容时发生错误", "body", string(body), "err", err)
+		logger.SugaredLogger.Errorw("反序列化 ipip.net 返回的内容时发生错误", "body", string(body), "err", err)
 		return "", fmt.Errorf("反序列化myip.ipip.net返回的内容时发生错误: %w", err)
 	}
 

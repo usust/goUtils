@@ -1,4 +1,4 @@
-package utils
+package logger
 
 import (
 	"os"
@@ -9,60 +9,59 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-type zapConfig struct {
-	// path of the log file
-	LogDir string `mapstructure:"log_dir"`
-	// max size (MB) of the single log file
-	MaxSize int `mapstructure:"max_size"`
-	// max number of saved log files
-	MaxBackups int `mapstructure:"max_backups"`
-	// max day number of the saved log file 最多保留旧日志文件的天数
-	MaxAge int `mapstructure:"max_age"`
-	// whether compress the log file
-	Compress bool `mapstructure:"compress"`
-}
+//type zapConfig struct {
+//	// path of the log file
+//	LogDir string `mapstructure:"log_dir"`
+//	// max size (MB) of the single log file
+//	MaxSize int `mapstructure:"max_size"`
+//	// max number of saved log files
+//	MaxBackups int `mapstructure:"max_backups"`
+//	// max day number of the saved log file 最多保留旧日志文件的天数
+//	MaxAge int `mapstructure:"max_age"`
+//	// whether compress the log file
+//	IsCompress bool `mapstructure:"compress"`
+//}
 
-// the only object of the zapConfig struct
-var zapConf zapConfig
-
-// Logger 全局日志对象
-var Logger *zap.Logger
-
-// SugaredLogger 全局Sugar日志对象,提供更便捷的API
-var SugaredLogger *zap.SugaredLogger
-
-// ZapLogConfig zap配置
-type ZapLogConfig struct {
-	// 日志文件路径
-	Filename string `mapstructure:"filename"`
-	// 单个日志文件的最大大小 (MB)
-	MaxSize int `mapstructure:"max_size"`
-	// 最多保留的旧日志文件个数
-	MaxBackups int `mapstructure:"max_backups"`
-	// 最多保留旧日志文件的天数
-	MaxAge int `mapstructure:"max_age"`
-	// 是否压缩旧日志文件
-	Compress bool `mapstructure:"compress"`
-}
+// 对外暴露的日志对象
+var (
+	Logger        *zap.Logger
+	SugaredLogger *zap.SugaredLogger
+)
 
 // InitZapCore 初始化zap日志
-func InitZapCore() error {
+func InitZapCore(encoder *zapcore.EncoderConfig, option ...ZapOption) error {
+	var encoderConfig zapcore.EncoderConfig
+
 	// 设置日志输出格式
-	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:        "time",
-		LevelKey:       "level",
-		NameKey:        "logger",
-		CallerKey:      "caller",
-		MessageKey:     "msg",
-		StacktraceKey:  "stacktrace",
-		LineEnding:     zapcore.DefaultLineEnding,
-		EncodeLevel:    zapcore.LowercaseLevelEncoder,
-		EncodeTime:     zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05"),
-		EncodeDuration: zapcore.SecondsDurationEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
+	if encoder == nil {
+		encoderConfig = zapcore.EncoderConfig{
+			TimeKey:        "time",
+			LevelKey:       "level",
+			NameKey:        "logger",
+			CallerKey:      "caller",
+			MessageKey:     "msg",
+			StacktraceKey:  "stacktrace",
+			LineEnding:     zapcore.DefaultLineEnding,
+			EncodeLevel:    zapcore.LowercaseLevelEncoder,
+			EncodeTime:     zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05"),
+			EncodeDuration: zapcore.SecondsDurationEncoder,
+			EncodeCaller:   zapcore.ShortCallerEncoder,
+		}
+	} else {
+		encoderConfig = *encoder
 	}
+
 	// 配置JSON编码器
 	jsonEncoder := zapcore.NewJSONEncoder(encoderConfig)
+
+	// the only object of the zapConfig struct
+	zapConf := ZapLogConfig{
+		LogDir:     "./log",
+		MaxSize:    10,
+		MaxBackups: 30,
+		MaxAge:     180,
+		IsCompress: true,
+	}
 
 	// 根据不同等级创建不同的日志文件
 	infoWriter := zapcore.AddSync(&lumberjack.Logger{
@@ -70,21 +69,21 @@ func InitZapCore() error {
 		MaxSize:    zapConf.MaxSize,
 		MaxBackups: zapConf.MaxBackups,
 		MaxAge:     zapConf.MaxAge,
-		Compress:   zapConf.Compress,
+		Compress:   zapConf.IsCompress,
 	})
 	errorWriter := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   filepath.Join(zapConf.LogDir, "error.log"),
 		MaxSize:    zapConf.MaxSize,
 		MaxBackups: zapConf.MaxBackups,
 		MaxAge:     zapConf.MaxAge,
-		Compress:   zapConf.Compress,
+		Compress:   zapConf.IsCompress,
 	})
 	debugWriter := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   filepath.Join(zapConf.LogDir, "debug.log"),
 		MaxSize:    zapConf.MaxSize,
 		MaxBackups: zapConf.MaxBackups,
 		MaxAge:     zapConf.MaxAge,
-		Compress:   zapConf.Compress,
+		Compress:   zapConf.IsCompress,
 	})
 
 	// 设置日志级别过滤器

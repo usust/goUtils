@@ -2,6 +2,8 @@ package utils
 
 import (
 	"fmt"
+	"go_utils/logger"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -45,22 +47,22 @@ func initGormConnect() error {
 		gormConf.ParseTime,
 		gormConf.Loc)
 	if db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{}); err != nil {
-		SugaredLogger.Errorw("gorm init err", "link", dsn, "err", err)
+		logger.SugaredLogger.Errorw("gorm init err", "link", dsn, "err", err)
 		return fmt.Errorf("gorm初始化时[%s]发生错误: %s", dsn, err)
 	} else {
 		// 成功连接到数据库
 		GormDB = db
-		SugaredLogger.Info("gorm连接数据库成功")
+		logger.SugaredLogger.Info("gorm连接数据库成功")
 	}
 
 	// 数据迁移
 	if err := GormDB.AutoMigrate(
 	// 这里添加数据模型结构体，如：&models.User{},
 	); err != nil {
-		SugaredLogger.Errorf("gorm auto migrate err: %v", err)
+		logger.SugaredLogger.Errorf("gorm auto migrate err: %v", err)
 		return fmt.Errorf("gorm自动迁移时发生错误: %s", err.Error())
 	} else {
-		SugaredLogger.Info("gorm自动迁移数据成功")
+		logger.SugaredLogger.Info("gorm自动迁移数据成功")
 	}
 	return nil
 }
