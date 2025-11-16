@@ -1,4 +1,4 @@
-package utils
+package other
 
 import (
 	"fmt"
@@ -57,7 +57,7 @@ func initGormConnect() error {
 
 	// 数据迁移
 	if err := GormDB.AutoMigrate(
-	// 这里添加数据模型结构体，如：&models.User{},
+		// 这里添加数据模型结构体，如：&models.User{},
 	); err != nil {
 		logger.SugaredLogger.Errorf("gorm auto migrate err: %v", err)
 		return fmt.Errorf("gorm自动迁移时发生错误: %s", err.Error())
