@@ -30,7 +30,7 @@ func queryIpIpNet() (string, error) {
 	type ipIpNetResponse struct {
 		Ret  string `json:"ret"`
 		Data struct {
-			IP       string   `json:"myip"`
+			IP       string   `json:"ip"`
 			Location []string `json:"location"`
 		} `json:"data"`
 	}
